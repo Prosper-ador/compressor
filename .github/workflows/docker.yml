@@ -1,0 +1,62 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  RUST_IMAGE_NAME: ${{ github.repository }}/rust-compressor
+  JS_IMAGE_NAME: ${{ github.repository }}/js-compressor
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [rust-compressor, js-compressor]
+        include:
+          - image: rust-compressor
+            dockerfile: rust-compressor/Dockerfile
+            context: rust-compressor
+          - image: js-compressor  
+            dockerfile: js-compressor/Dockerfile
+            context: js-compressor
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ matrix.image == 'rust-compressor' && env.RUST_IMAGE_NAME || env.JS_IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+          outputs: type=docker,compression=zstd,compression-level=19
