@@ -1,0 +1,33 @@
+{
+  "name": "js-compressor",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Powerful file compression CLI tool implementing RLE and LZ77 algorithms",
+  "main": "index.js",
+  "bin": {
+    "js-compressor": "./index.js"
+  },
+  "scripts": {
+    "test": "mocha \"test/**/*.test.js\"",
+    "start": "node index.js",
+    "bench": "node benches/benchmark.js"
+  },
+  "keywords": [
+    "compression",
+    "rle",
+    "lz77",
+    "cli",
+    "nodejs",
+    "wasm"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "chai": "^4.3.7",
+    "mocha": "^10.8.2"
+  }
+}

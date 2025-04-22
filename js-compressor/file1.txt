@@ -1,0 +1,19 @@
+🛑 Where RLE Fails
+REFiis not effective for:
+
+Most text documents (natural language is not that repetitive byte-wise)
+
+Images with lots of color variation (e.g., JPEGs)
+
+Audio/Video files (data is highly dynamic and already compressed)
+
+In these cases, RLE might inflate file size!
+
+🔍 You Should Detect File Type or Pattern Suitability First
+To avoid worsening compression, implement:
+
+File extension checks
+
+Entropy analysis (see how repetitive the data is)
+
+
